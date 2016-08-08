@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NY News Memories</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="src/style.css">
+    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>    
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="wrapper">
+                <a class="menu"><span class="glyphicon glyphicon-align-justify">Menu</span></a>
+                <nav class="flex-nav">
+                    <ul>
+                        <li><a href="">Item 1</a></li>
+                        <li><a href="">Item 2</a></li>
+                        <li><a href="">Item 3</a></li>
+                        <li><a href="">Item 4</a></li>
+                        <li><a href="">Item 5</a></li>
+                        <li><a href="">Item 6</a></li>
+                        <li class="social"><a href=""><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span></a></li>
+                        <li class="social"><a href=""><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></a></li>
+                        <li class="social"><a href=""><span class="glyphicon glyphicon-fire" aria-hidden="true"></span></a></li>
+                        <li class="social"><a href=""><span class="glyphicon glyphicon-random" aria-hidden="true"></span></a></li>
+                    </ul>
+                </nav>
+            </div>       
+        </div>
+        <div class="row">
+            <div class="col-xs-10">            
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
+                    <input type="text" class="form-control" placeholder="Argomento" aria-describedby="basic-addon1" id="argomento">
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <button type="button" class="btn btn-info" id="cerca">Cerca</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12" id="results">
+
+            </div>            
+        </div>
+    </div>   
+</body>
+<script type="text/javascript">
+    $(function(){
+        $('.menu').on("click", function(){
+            $(".flex-nav ul").toggleClass("open");
+        })
+
+        $("#cerca").on("click", function() {
+            var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+            url += '?' + $.param({
+                'api-key': "7626ad7ab3d34f0699f783e731478f58",
+                'q': $("#argomento").val(),
+                'begin_date': "20030101",
+                'end_date': "20100101",
+                'sort': "newest",
+                'fl': "web_url,lead_paragraph,multimedia,headline,pub_date,document_type,news_desk,byline"
+            });
+            $.ajax({
+                url: url,
+                method: 'GET',
+            }).done(function(result) {
+                console.log(result.response.docs);
+                for(news in result.response.docs){
+                    console.log(news);
+                    $("#results").append(
+                        $("<div></div>", {"class":"col-sm-4"}).append(
+                            $("<div></div", {"class": "panel panel-info"}).append(
+                                $("<div></div>", {"class": "panel-heading"}).html(result.response.docs[news].headline.print_headline),
+                                $("<div></div>", {"class": "panel-body"}).html(result.response.docs[news].lead_paragraph)
+                            )
+                        )
+                    );
+
+                }
+
+
+            }).fail(function(err) {
+                throw err;
+            });
+        });
+    });
+</script>
+</html>
